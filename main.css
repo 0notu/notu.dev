@@ -1,0 +1,10 @@
+.navBar {
+	width: 100%;
+	color: Black;
+}
+.navBarItem {
+	float: left
+	display: block;
+	padding: 8px;
+	background-color: #dddddd;
+}
