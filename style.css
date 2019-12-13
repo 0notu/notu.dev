@@ -1,0 +1,128 @@
+
+.tabsBar {
+  float: left;
+  font-family: "Lucida Console", Monaco, monospace;
+}
+
+.embedsBar {
+
+}
+
+.linksBar {
+  display: block;
+  font-size: x-large;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+/* Change the tab color to #111 (black) on hover */
+.linksBar:hover {
+  background-color: #111;
+}
+.linksBar.active {
+  background-color: #4CAF50;
+}
+
+.todo {
+  box-sizing: border-box;
+  list-style-type: none;
+  overflow: hidden;
+  position:fixed;
+  margin: 0;
+  padding: 0;
+  width: auto;
+  height: auto;
+  overflow: hidden;
+  background-color: #333;
+  top: 150;
+  left: 8px;
+  float: right;
+  
+}
+
+.todotask {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  text-decoration: none;
+  font-family: "Lucida Console", Monaco, monospace;
+}
+
+.todoitem {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  text-decoration: none;
+  font-family: "Lucida Console", Monaco, monospace;
+}
+
+.todoitem:hover {
+  background-color: #111;
+}
+.todoitem.active {
+  background-color: #4CAF50;
+}
+
+.todolist {
+  display: block;
+  color: white;
+  font-size: small;
+  text-align: center;
+  padding: 0;
+  text-decoration: none;
+  left: auto;
+  width: auto;
+  height: 500px;
+  backround: #333;
+  float: left;
+}
+
+/* Darker background-color on hover */
+.footerlink:hover {
+  font-size: medium;
+  padding: auto;
+}
+
+.footer:hover {
+  list-style-type: none;
+  display: block;
+  text-decoration: none;
+  width: 100%;
+  height: 50px;
+  background: #333;
+  display: flex;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  padding: auto;
+}
+
+.footer {
+  list-style-type: none;
+  display: block;
+  text-decoration: none;
+  width: 100%;
+  height: 30px;
+  background: #333;
+  display: flex;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  
+}
+
+.footerlink {
+  display: block;
+  color: white;
+  font-size: x-small;
+  font-family: "Lucida Console", Monaco, monospace;
+  margin-top: auto;
+  margin-bottom: auto;
+  float: left;
+  padding: auto;
+  text-align: center;
+}
