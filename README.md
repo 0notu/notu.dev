@@ -1,4 +1,4 @@
-# NotYouDev.github.io
+# notU.github.io
 A website that happens to be about me.
 
 ### Dependences
