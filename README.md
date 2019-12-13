@@ -1,2 +1,5 @@
 # NotYouDev.github.io
-A website thathappens to be about me.
+A website that happens to be about me.
+
+### Dependences
+// https://xtermjs.org/
