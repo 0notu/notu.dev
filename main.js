@@ -109,13 +109,9 @@ module.exports = class webServer {
         worker = this.workers.find(u => u.user == data.token)
       } else {throw "e"}
     } catch {
-      console.log("before")
       worker = new Worker(this.secret.url, data.token, time += this.secret.api);
-      console.log("after")
-      console.log("worker: "+worker)
       this.workers.push(worker);
     } finally {
-      console.log(data)
       worker.work(res, data);
       return worker;
     }
@@ -129,8 +125,8 @@ module.exports = class webServer {
         console.log(content)
         let worker = this._employment(res, content);
         worker.on('invalidToken', () => { // on token timeout
-          conent.token, worker = null; // prune old worker & reset token
-          this._employment(res, conent) // new worker + token
+          content.token, worker = null; // prune old worker & reset token
+          this._employment(res, content) // new worker + token
         })
       });
     } else {

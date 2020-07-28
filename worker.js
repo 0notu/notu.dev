@@ -2,6 +2,7 @@ const api = require('./api.js');
 const Events = require('events');
 module.exports = class Worker extends Events {
   constructor(url, token, time) {
+    super();
     this.url = url
     this.user = token
     this.timestamp = time
@@ -18,14 +19,18 @@ module.exports = class Worker extends Events {
 
   work(res, data) {
     if (Date.now() >= this.timestamp) { // auto-prune
-      super.emit('invalidToken');
+      this.emit('invalidToken');
       return;
     } else {
-      console.log(data.token)
-      res.end(JSON.stringify({
-        token: data.token,
-        conent: api[data.method](data) // will have to add async support
-      }));
+      console.log(data.method)
+      try {
+        res.end(JSON.stringify({
+          token: data.token,
+          content: api[data.method](data) // will have to add async support
+        }));
+      } catch {
+        res.end(404)
+      }
     }
   }
 }

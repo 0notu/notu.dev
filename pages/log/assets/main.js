@@ -1,11 +1,11 @@
-window.onload = get_recent();
+window.onload = get_recent_log();
 
-function get_recent() {
+function get_recent_log() {
     let recent = document.getElementsByClassName("recent").children;
     $.ajax({
         type: "POST",
         url: "/api",
-        data: JSON.stringify({token: sessionStorage.getItem("token") || null, method: "get_recent"})
+        data: JSON.stringify({token: sessionStorage.getItem("token") || null, method: "get_recent_log"})
     }).done((j) => {
         let data = JSON.parse(j);
         console.log(data)
