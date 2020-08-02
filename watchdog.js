@@ -1,37 +1,50 @@
-const fs = require('fs');
-
 module.exports = (settings) => {
-	let users = JSON.parse(fs.readFileSync("./users.json"));
+    /**
+     * for now, this will be in-mem storage,
+     * but planning on writing a mongoose
+     * method, with calls for updating user,
+     * and pulling user.
+     * 
+     * This will live in @function update_user
+     * so for now, the very simple users[ip] = user
+     * lives there
+     * 
+     * ~notU
+     */
+    let users = {};
 	function update_user(ip, user) {
 		users[ip] = user;
-		fs.writeFile("./users.json", JSON.stringify(users, null, 2), (err) => {
-			if (err) {console.log("[!] "+err)}
-		})
 	};
-	function jailbreak() {
-		fs.writeFile("./users.json", JSON.stringify({}, null, 2), (err) => {
-			if (err) {console.log("[!] "+err)}
-		})
-	}
-	jailbreak(); // wipe all records on server start
 	return {
 		api_limiter: (req) => {
-			var timeout;
+			var timeout, u;
 			let time = Date.now();
 			let rate = settings.rate;
 			// sorted into an ip-userObj matrix
-			let ip = req.headers['x-forwardedfor'] || req.connection.remoteAddress;
-			let u = users[ip];
-			// new user
-			if (!u) {u = {last: time-rate.timeBetween, count:0}; update_user(ip, u)}
+            let ip = req.headers['x-forwardedfor'] || req.connection.remoteAddress;
+            /**
+             * I hate these if/else statements,
+             * but I'll create a more elegent solution when
+             * the formula and intended implementation are complete.
+             * as it stands,
+             * this is a pre-alpha build,
+             * so it's not really gonna be used heavily
+             * ~notU
+             */
+            if (!users[ip]) {
+                u = {last: time-rate.timeBetween, count:0};
+                update_user(ip, u)
+			} else {u = users[ip]}
+			
 			if (u.last+rate.timeBetween > time) { // req-buffer
 				console.log("req-buffer rate-limit reached")
 				timeout = (u.last+rate.timeBetween)-time;
-			} else {timeout = 0}
+            } else {timeout = 0}
+            // ew ew ew ew ~notU
 			u.count += 1;
 			u.last = time;
 			update_user(ip, u);
-			console.log("Timeout Value (ms): "+timeout)
+			console.log("To Be Executed In (ms): "+timeout)
 			return new Promise((resolve, reject) => { 
 				setTimeout(() => {
 					try {
