@@ -2,8 +2,9 @@ process.on('uncaughtException', (e) => {console.log(e)})
 
 const http = require('http');
 const fs = require('fs');
-const Worker = require('./worker.js');
-const { uuid } = require('uuidv4');
+
+const api = require('./api.js');
+const watchdog = require('./watchdog.js')
 
 
 module.exports = class webServer {
@@ -12,7 +13,7 @@ module.exports = class webServer {
     this.secret = secret
     this.types = types
 
-    this.workers = []
+    this.watchdog = watchdog(this.secret.watchdog)
 
     this.server = http.createServer((req, res) => this.handle(req, res));
     this.server.listen(this.secret.port || 80) // in production this should be 80
@@ -62,7 +63,6 @@ module.exports = class webServer {
         this.pages[group].push(detail)
       }
       fs.writeFile("./pages.json", JSON.stringify(this.pages, null, 2), (err) => {
-        console.log("[#] Path File Updated")
         if (err) {console.log("[!] "+err)}
       })
     })
@@ -92,64 +92,29 @@ module.exports = class webServer {
     }
   }
 
-  _collect(req, call) { // ease of use
-    let buffer = [];
-    req.on('data', (chunk) => {
-      buffer.push(chunk);
-    });
-    req.on('end', () => {call(JSON.parse(buffer))})
-  }
-
-  _employment(res, data) { // worker management
-    let worker;
-    let time = Date.now();
-    if (!data.token) {data.token = uuid()}
-    try {
-      if (this.workers.find(u => u.user == data.token)) {
-        worker = this.workers.find(u => u.user == data.token)
-      } else {throw "e"}
-    } catch {
-      worker = new Worker(this.secret.url, data.token, time += this.secret.api);
-      this.workers.push(worker);
-    } finally {
-      worker.work(res, data);
-      return worker;
-    }
-  }
-
   handle(req, res) {
-    let page, asset;
     let data = req.url.split("/");
     if (data[1] == "api") { // proxying api requests through webserver
-      this._collect(req, (content) => {
-        console.log(content)
-        let worker = this._employment(res, content);
-        worker.on('invalidToken', () => { // on token timeout
-          content.token, worker = null; // prune old worker & reset token
-          this._employment(res, content) // new worker + token
-        })
+      this.watchdog.collect(req).then(content => {
+        this.watchdog.api_limiter(req).then(() => {
+          res.end(JSON.stringify(api[content.method](content)))
+        }, err => {
+          console.log(err);
+          res.setHeader(500);
+          res.end(JSON.stringify(err))
+        });
       });
     } else {
-      // NOTE this is ugly, fix it
-      let outcomes = [
-        {position: 1, check: "", page: "index", asset: "index.html"}, // intial index load
-        {position: 1, check: "favicon.ico", page: "global", asset: "favicon.ico"}, // initial favicon request
-        {position: 0, check: "", page: data[1], asset: "index.html"} // intial page(group) load
-      ]
-      try {
-        if (data[2]) {throw error} // group & asset already set
-        let correct = outcomes.find(o => data[o.position] == o.check);
-        page = correct.page, asset = correct.asset
-      } catch { // page and asset already set
-        page = data[1], asset = data[2]
-      }
-      // end NOTE
-      try { // content exists
-        this.pages[page].find(a => a.alias == asset)
-        this.serveAsset(req, res, {page: page, asset: asset})
-      } catch { // page does not exist
-        this.serveAsset(req, res, {page: "404", asset: "index.html"})
-      }
+      this.watchdog.set_target(req).then((obj) => {
+        let page = obj.page;
+        let asset = obj.asset;
+        try { // content exists
+          this.pages[page].find(a => a.alias == asset)
+          this.serveAsset(req, res, {page: page, asset: asset})
+        } catch { // page does not exist
+          this.serveAsset(req, res, {page: "404", asset: "index.html"})
+        }
+      })
     }
   }
 }

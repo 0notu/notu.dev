@@ -1,3 +1,6 @@
 module.exports.get_recent_log = (data) => {
-    return "Hello "+data.token // debugging
+    let ret = {};
+    //ret.error = "Testing Errors";
+    ret.content = "123Testing321";
+    return ret;
 }
