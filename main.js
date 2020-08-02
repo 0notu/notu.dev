@@ -93,6 +93,7 @@ module.exports = class webServer {
   }
 
   handle(req, res) {
+    console.log("new req")
     let data = req.url.split("/");
     if (data[1] == "api") { // proxying api requests through webserver
       this.watchdog.collect(req).then(content => {
@@ -105,6 +106,7 @@ module.exports = class webServer {
         });
       });
     } else {
+      console.log("page req")
       this.watchdog.set_target(req).then((obj) => {
         let page = obj.page;
         let asset = obj.asset;
