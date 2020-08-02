@@ -16,7 +16,7 @@ module.exports = class webServer {
     this.watchdog = watchdog(this.secret.watchdog)
 
     this.server = http.createServer((req, res) => this.handle(req, res));
-    this.server.listen(/*this.secret.port ||*/8080) // in production this should be 80
+    this.server.listen(/*this.secret.port ||*/80) // in production this should be 80
   }
 
   async init() {
