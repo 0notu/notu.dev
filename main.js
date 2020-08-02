@@ -108,6 +108,7 @@ module.exports = class webServer {
       this.watchdog.set_target(req).then((obj) => {
         let page = obj.page;
         let asset = obj.asset;
+        console.log(page, "|", asset)
         try { // content exists
           this.pages[page].find(a => a.alias == asset)
           this.serveAsset(req, res, {page: page, asset: asset})
